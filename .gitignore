@@ -3,6 +3,8 @@
 .LSOverride
 azure.err
 iisnode.yml
+/node_modules
+/public/dist
 
 # Icon must ends with two \r.
 Icon

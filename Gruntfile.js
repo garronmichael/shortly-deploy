@@ -2,7 +2,17 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+
     concat: {
+      library: {
+        src: ['public/lib/underscore.js', 'public/lib/jquery.js',
+              'public/lib/backbone.js', 'public/lib/handlebars.js'],
+        dest: 'public/dist/production_lib.js',
+      },
+      app: {
+        src: ['public/client/*.js'],
+        dest: 'public/dist/production_app.js',
+      }
     },
 
     mochaTest: {
@@ -21,11 +31,18 @@ module.exports = function(grunt) {
     },
 
     uglify: {
+      build: {
+        files: {
+          'public/dist/production_lib.min.js': ['public/dist/production_lib.js'],
+          'public/dist/production_app.min.js': ['public/dist/production_app.js']
+        }
+      }
     },
 
     jshint: {
       files: [
         // Add filespec list here
+        '*.js'
       ],
       options: {
         force: 'true',
@@ -38,6 +55,15 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
+      target: {
+        files: [{
+          expand: true,
+          cwd: 'public',
+          src: ['style.css', '!*.min.css'],
+          dest: 'public/dist',
+          ext: '.min.css'
+        }]
+      }
     },
 
     watch: {
@@ -59,6 +85,7 @@ module.exports = function(grunt) {
 
     shell: {
       prodServer: {
+        command: 'git push azure master'
       }
     },
   });
@@ -90,15 +117,21 @@ module.exports = function(grunt) {
   ////////////////////////////////////////////////////
 
   grunt.registerTask('test', [
-    'mochaTest'
+    'mochaTest',
+    'jshint'
   ]);
 
   grunt.registerTask('build', [
+    'concat',
+    'uglify',
+    'cssmin',
+    'jshint'
   ]);
 
-  grunt.registerTask('upload', function(n) {
+  grunt.registerTask('upload', function() {
     if(grunt.option('prod')) {
       // add your production server task here
+      grunt.task.run([ 'shell' ]);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
@@ -106,6 +139,9 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy', [
     // add your deploy tasks here
+    'test',
+    'build',
+    'upload'
   ]);
 
 
