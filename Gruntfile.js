@@ -4,12 +4,14 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     concat: {
-      dist: {
-        src: [
-          '/public/client/*.js',
-          '/public/lib/*.js'
-        ],
-        dest: '/public/build/production.js'
+      library: {
+        src: ['public/lib/underscore.js', 'public/lib/jquery.js',
+              'public/lib/backbone.js', 'public/lib/handlebars.js'],
+        dest: 'public/dist/production_lib.js',
+      },
+      app: {
+        src: ['public/client/*.js'],
+        dest: 'public/dist/production_app.js',
       }
     },
 
@@ -30,8 +32,10 @@ module.exports = function(grunt) {
 
     uglify: {
       build: {
-        src: 'public/build/production.js',
-        dest: 'public/build/production.min.js'
+        files: {
+          'public/dist/production_lib.min.js': ['public/dist/production_lib.js'],
+          'public/dist/production_app.min.js': ['public/dist/production_app.js']
+        }
       }
     },
 
@@ -56,7 +60,7 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'public',
           src: ['style.css', '!*.min.css'],
-          dest: 'public/build',
+          dest: 'public/dist',
           ext: '.min.css'
         }]
       }
@@ -120,6 +124,7 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'concat',
     'uglify',
+    'cssmin',
     'jshint'
   ]);
 
