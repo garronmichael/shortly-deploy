@@ -81,11 +81,7 @@ module.exports = function(grunt) {
 
     shell: {
       prodServer: {
-        multiple: {
-          command: [
-          'mkdir build'
-          ].join('&&')
-        }
+        command: 'git push azure master'
       }
     },
   });
@@ -127,9 +123,10 @@ module.exports = function(grunt) {
     'jshint'
   ]);
 
-  grunt.registerTask('upload', function(n) {
+  grunt.registerTask('upload', function() {
     if(grunt.option('prod')) {
       // add your production server task here
+      grunt.task.run([ 'shell' ]);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
